@@ -23,7 +23,7 @@ public class RegistryScraper {
         int pageNum = 1;
         int totalPages = Integer.MAX_VALUE;
 
-        String registryDirName = "registry-entries";
+        String registryDirName = "epbs-registry-entries";
         Files.createDirectories(Paths.get(registryDirName));
 
         while (pageNum <= totalPages) {
@@ -49,9 +49,10 @@ public class RegistryScraper {
 
                 System.out.printf("Получение страницы %d из %d\n", pageNum, totalPages);
 
-                String fileName = String.format(registryDirName + "/page_%d.json", pageNum);
+                String fileName = String.format(registryDirName + "/epbs_%s_%s_page_%d.json", fromDate, toDate, pageNum);
                 File outputFile = new File(fileName);
                 objectMapper.writeValue(outputFile, rootNode);
+                System.out.println("Сохранено в: " + registryDirName + "/" + outputFile.getName());
 
                 pageNum++;
                 Thread.sleep(100);
