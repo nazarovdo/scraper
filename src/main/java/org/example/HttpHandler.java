@@ -7,9 +7,21 @@ import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import java.io.IOException;
 
-// resolve by dateUpdate field?
-
 public class HttpHandler {
+
+    public String fetchRegistryEntries(String lastUpdateFrom,
+                                       String lastUpdateTo,
+                                       Integer pageNum,
+                                       Integer pageSize
+    ) throws IOException {
+        String targetUrl = "https://budget.gov.ru/epbs/registry/ubpandnubp/data?" +
+                "filterminloaddate=" + lastUpdateFrom +
+                "&filtermaxloaddate=" + lastUpdateTo +
+                "&pageSize=" + pageSize.toString() +
+                "&pageNum=" + pageNum.toString();
+
+        return sendGetRequest(targetUrl);
+    }
 
     public String sendGetRequest(String url) throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {

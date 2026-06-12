@@ -3,7 +3,7 @@ package org.example;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class Scraper {
+public class ScraperApp {
     public static void main(String[] args) {
 
         String lastUpdateFromStr = null;
@@ -38,23 +38,10 @@ public class Scraper {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             LocalDate.parse(lastUpdateFromStr, formatter);
             LocalDate.parse(lastUpdateToStr, formatter);
-            System.out.println("Даты корректны. Отправка запроса к API...");
+            System.out.println("Даты корректны");
 
-            String targetUrl = "https://budget.gov.ru/epbs/registry/ubpandnubp/data?filterminloaddate=" + lastUpdateFromStr + "&filtermaxloaddate=" + lastUpdateToStr;
-            System.out.println("Целевой URL: " + targetUrl);
-
-            HttpHandler httpHandler = new HttpHandler();
-            try {
-                String jsonResponse = httpHandler.sendGetRequest(targetUrl);
-
-                System.out.println("JSON успешно получен");
-                System.out.println(jsonResponse);
-
-                // todo: string to object
-
-            } catch (Exception e) {
-                System.err.println("Ошибка API: " + e.getMessage());
-            }
+            RegistryScraper registryScraper = new RegistryScraper();
+            registryScraper.scrapeAllData(lastUpdateFromStr, lastUpdateToStr);
 
         } catch (java.time.format.DateTimeParseException e) {
             System.err.println("Ошибка: Неверный формат даты или дата не существует! Используйте строго DD.MM.YYYY (например, 15.01.2026)");
