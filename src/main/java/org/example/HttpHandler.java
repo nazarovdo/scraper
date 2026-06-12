@@ -19,7 +19,7 @@ public class HttpHandler {
             HttpClientResponseHandler<String> responseHandler = response -> {
                 int statusCode = response.getCode();
                 if (statusCode != 200) {
-                    throw new IOException("Server error: " + statusCode);
+                    throw new IOException("Ошибка сервера: " + statusCode);
                 }
                 if (response.getEntity() != null) {
                     return EntityUtils.toString(response.getEntity(), "UTF-8");
