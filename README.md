@@ -10,5 +10,5 @@
 
 ### Пример команды запуска:
 ```bash
-java -jar scraper.jar --lastUpdateFrom 10.06.2026 --lastUpdateFrom 15.06.2026
+java -jar scraper.jar --lastUpdateFrom 10.06.2026 --lastUpdateTo 15.06.2026
 ```
