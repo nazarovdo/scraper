@@ -7,3 +7,8 @@
 `--lastUpdateFrom`: начало диапазона дат обновления записей на ЕПБС;
 
 `--lastUpdateTo`: конец диапазона дат обновления записей на ЕПБС.
+
+### Пример команды запуска:
+```bash
+java -jar scraper.jar --lastUpdateFrom 10.06.2026 --lastUpdateFrom 15.06.2026
+```
