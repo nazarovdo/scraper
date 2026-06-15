@@ -10,14 +10,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.sql.Connection;
 
 public class RegistryScraper {
 
     private final HttpHandler httpHandler;
     private final ObjectMapper objectMapper;
+    private final DatabaseHandler databaseHandler;
 
     public RegistryScraper() {
         this.httpHandler = new HttpHandler();
+        this.databaseHandler = new DatabaseHandler();
         this.objectMapper = new ObjectMapper();
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
@@ -31,9 +34,9 @@ public class RegistryScraper {
         Files.createDirectories(Paths.get(registryDirName));
         String zipFilePath = String.format("%s/epbs_%s_%s.zip", registryDirName, fromDate, toDate);
 
-        try (FileOutputStream fos = new FileOutputStream(zipFilePath);
+        try (Connection connection = databaseHandler.getConnection();
+             FileOutputStream fos = new FileOutputStream(zipFilePath);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
-
             while (pageNum <= totalPages) {
                 try {
                     String jsonResponse = httpHandler.fetchRegistryEntries(fromDate, toDate, pageNum, pageSize);
@@ -55,6 +58,8 @@ public class RegistryScraper {
                     }
 
                     System.out.printf("Получение страницы %d из %d\n", pageNum, totalPages);
+                    JsonNode dataArray = rootNode.get("data");
+                    databaseHandler.savePageEntries(connection, dataArray, fromDate, toDate);
 
                     String fileName = String.format("epbs_%s_%s_page_%d.json", fromDate, toDate, pageNum);
                     ZipEntry zipEntry = new ZipEntry(fileName);
@@ -73,11 +78,16 @@ public class RegistryScraper {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Ошибка: " + e.getMessage());
-            throw e;
+            if (e instanceof IOException) {
+                throw (IOException) e;
+            } else {
+                throw new IOException(e);
+            }
         }
 
-        System.out.println("Сканирование успешно завершено. Все страницы сохранены в " + zipFilePath);
+        System.out.println("Сканирование успешно завершено. Данные сохранены в БД");
+        System.out.println("Резервная копия сохранена в " + zipFilePath);
     }
 }

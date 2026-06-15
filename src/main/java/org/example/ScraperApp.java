@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class ScraperApp {
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     public static void main(String[] args) {
 
         String lastUpdateFromStr = null;
@@ -23,7 +25,7 @@ public class ScraperApp {
                         break;
                     default:
                         System.out.println("Неизвестный формат аргумента: " + flag);
-                        break;
+                        return;
                 }
                 i++;
             }
@@ -33,13 +35,15 @@ public class ScraperApp {
             return;
         }
 
-        System.out.println("Сборщик данных инициализирован");
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            LocalDate.parse(lastUpdateFromStr, formatter);
-            LocalDate.parse(lastUpdateToStr, formatter);
-            System.out.println("Даты корректны");
+            LocalDate fromDate = LocalDate.parse(lastUpdateFromStr, DATE_FORMATTER);
+            LocalDate toDate = LocalDate.parse(lastUpdateToStr, DATE_FORMATTER);
 
+            if (fromDate.isAfter(toDate)) {
+                System.err.printf("Ошибка: Дата начала периода (%s) не может быть позже даты окончания (%s)%n",
+                        lastUpdateFromStr, lastUpdateToStr);
+                return;
+            }
             RegistryScraper registryScraper = new RegistryScraper();
             registryScraper.scrapeAllData(lastUpdateFromStr, lastUpdateToStr);
 
@@ -48,6 +52,7 @@ public class ScraperApp {
         } catch (Exception e) {
             System.err.println("Ошибка: " + e.getMessage());
         }
-
     }
+
+
 }
