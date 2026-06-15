@@ -52,6 +52,7 @@ public class RegistryScraper {
                             totalPages = rootNode.get("pageCount").asInt();
                             int totalRecords = rootNode.has("recordCount") ? rootNode.get("recordCount").asInt() : 0;
                             System.out.println("Всего записей в реестре c " + fromDate + " по " + toDate + ": " + totalRecords);
+                            databaseHandler.clearIntervalBeforeLoad(connection, fromDate, toDate);
                         } else {
                             System.out.println("Ключ pageCount не найден");
                         }

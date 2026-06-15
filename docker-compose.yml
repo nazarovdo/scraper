@@ -1,4 +1,6 @@
 services:
+
+  # основная база данных
   postgres-db:
     image: postgres:latest
     container_name: scraper_postgres
@@ -12,5 +14,20 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
+  # база данных для тестов
+  postgres-test-db:
+    image: postgres:latest
+    container_name: scraper_postgres_test
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: etl
+      POSTGRES_PASSWORD: etl
+      POSTGRES_DB: scraper_database_test
+    volumes:
+      - postgres_test_data:/var/lib/postgresql
+
 volumes:
   postgres_data:
+  postgres_test_data:

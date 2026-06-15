@@ -431,4 +431,21 @@ public class DatabaseHandler {
             }
         }
     }
+
+    public void clearIntervalBeforeLoad(Connection connection, String fromDate, String toDate) throws SQLException {
+        String deleteSql = "DELETE FROM epbs_registry WHERE \"lastUpdateFrom\" = ? AND \"lastUpdateTo\" = ?";
+
+        Timestamp startKey = Timestamp.valueOf(java.time.LocalDate.parse(fromDate, inputFormatter).atStartOfDay());
+        Timestamp endKey = Timestamp.valueOf(java.time.LocalDate.parse(toDate, inputFormatter).atStartOfDay());
+
+        try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
+            deleteStmt.setTimestamp(1, startKey);
+            deleteStmt.setTimestamp(2, endKey);
+            int deletedRows = deleteStmt.executeUpdate();
+            if (deletedRows > 0) {
+                System.out.println("[БД] Найдена повторная загрузка. Очищен интервал " + fromDate + " - " + toDate + ". Удалено старых строк: " + deletedRows);
+            }
+        }
+    }
+
 }
